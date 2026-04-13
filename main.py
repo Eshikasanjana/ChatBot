@@ -89,3 +89,14 @@ async def update_student(student_id: int, student: StudentCreate, db: db_depende
     db.commit()
     db.refresh(db_student)
     return {"message": "Student updated!", "student": db_student}
+
+# ── DELETE student by ID ──────────────────────────────────────
+@app.delete("/students/{student_id}")
+async def delete_student(student_id: int, db: db_dependency):
+    db_student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    db.delete(db_student)
+    db.commit()
+    return {"message": "Student deleted!", "student_id": student_id}
