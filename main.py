@@ -73,3 +73,19 @@ async def register_student(student: StudentCreate, db: db_dependency):
     db.commit()
     db.refresh(db_student)
     return {"message": "Student profile saved!", "student_id": db_student.id}
+    
+# ── PUT update student by ID ──────────────────────────────────
+@app.put("/students/{student_id}")
+async def update_student(student_id: int, student: StudentCreate, db: db_dependency):
+    db_student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    db_student.name = student.name
+    db_student.grade = student.grade
+    db_student.subjects = student.subjects
+    db_student.email = student.email
+
+    db.commit()
+    db.refresh(db_student)
+    return {"message": "Student updated!", "student": db_student}
